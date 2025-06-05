@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Party Parrot Rotate</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      touch-action: none;
+    }
+    img {
+      width: 200px;
+      height: 200px;
+      transition: transform 0.05s linear;
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <img src="https://cultofthepartyparrot.com/parrots/hd/parrot.gif" id="parrot" alt="Party Parrot">
+  <script>
+    const parrot = document.getElementById("parrot");
+
+    let isDragging = false;
+
+    const getAngle = (x, y, cx, cy) => {
+      return Math.atan2(y - cy, x - cx) * (180 / Math.PI);
+    };
+
+    // PC用マウス操作
+    document.addEventListener("mousedown", (e) => {
+      if (e.button === 0) isDragging = true;
+    });
+
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      rotateParrot(e.clientX, e.clientY);
+    });
+
+    // スマホ/タブレット用タッチ操作
+    document.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    document.addEventListener("touchend", () => {
+      isDragging = false;
+    });
+
+    document.addEventListener("touchmove", (e) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      rotateParrot(touch.clientX, touch.clientY);
+    });
+
+    function rotateParrot(x, y) {
+      const rect = parrot.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const angle = getAngle(x, y, centerX, centerY);
+      parrot.style.transform = `rotate(${angle}deg)`;
+    }
+  </script>
+</body>
+</html>
